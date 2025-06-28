@@ -42,9 +42,9 @@ Aplikasi manajemen aktivitas harian berbasis Flutter.
    ```
 
 3. **Jalankan aplikasi**
-```
-flutter run
-```
+    ```
+    flutter run
+    ```
 
 ## Cara lain, menjalankan aplikasi dengan Run and Debug
 
