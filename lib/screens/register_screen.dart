@@ -207,7 +207,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       if (errorMsg.contains('email')) {
                                         setState(
                                           () => error =
-                                              'Email sudah terdaftar atau tidak valid',
+                                              'Email sudah terdaftar/tidak valid',
                                         );
                                       } else if (errorMsg.contains(
                                         'password',

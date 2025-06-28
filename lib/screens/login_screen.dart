@@ -149,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   MaterialPageRoute(builder: (_) => const HomeScreen()),
                                 );
                               } catch (e) {
-                                setState(() => error = 'Login gagal, periksa email dan password Anda');
+                                setState(() => error = 'Login gagal');
                               } finally {
                                 setState(() => isLoading = false);
                               }
