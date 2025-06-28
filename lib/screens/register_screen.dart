@@ -26,10 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF667eea),
-              Color(0xFF764ba2),
-            ],
+            colors: [Color(0xFF667eea), Color(0xFF764ba2)],
           ),
         ),
         child: SafeArea(
@@ -58,10 +55,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 8),
                 const Text(
                   'Sign up to get started',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white70,
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.white70),
                 ),
                 const SizedBox(height: 40),
                 Card(
@@ -95,7 +89,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             prefixIcon: const Icon(Icons.lock_outlined),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                obscurePassword ? Icons.visibility : Icons.visibility_off,
+                                obscurePassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -119,11 +115,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             prefixIcon: const Icon(Icons.lock_outlined),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                                obscureConfirmPassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
                               ),
                               onPressed: () {
                                 setState(() {
-                                  obscureConfirmPassword = !obscureConfirmPassword;
+                                  obscureConfirmPassword =
+                                      !obscureConfirmPassword;
                                 });
                               },
                             ),
@@ -145,7 +144,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.error_outline, color: Colors.red[600], size: 20),
+                                Icon(
+                                  Icons.error_outline,
+                                  color: Colors.red[600],
+                                  size: 20,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
@@ -169,29 +172,60 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                               elevation: 2,
                             ),
-                            onPressed: isLoading ? null : () async {
-                              if (passwordController.text != confirmPasswordController.text) {
-                                setState(() => error = 'Password tidak cocok');
-                                return;
-                              }
-                              
-                              setState(() {
-                                isLoading = true;
-                                error = null;
-                              });
-                              
-                              try {
-                                await SupabaseService.signUp(emailController.text, passwordController.text);
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                                );
-                              } catch (e) {
-                                setState(() => error = 'Register gagal, coba lagi');
-                              } finally {
-                                setState(() => isLoading = false);
-                              }
-                            },
+                            onPressed: isLoading
+                                ? null
+                                : () async {
+                                    if (passwordController.text !=
+                                        confirmPasswordController.text) {
+                                      setState(
+                                        () => error = 'Password tidak cocok',
+                                      );
+                                      return;
+                                    }
+
+                                    setState(() {
+                                      isLoading = true;
+                                      error = null;
+                                    });
+
+                                    try {
+                                      await SupabaseService.signUp(
+                                        emailController.text,
+                                        passwordController.text,
+                                      );
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => const LoginScreen(),
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      // Cek error Supabase
+                                      final errorMsg = e
+                                          .toString()
+                                          .toLowerCase();
+                                      if (errorMsg.contains('email')) {
+                                        setState(
+                                          () => error =
+                                              'Email sudah terdaftar atau tidak valid',
+                                        );
+                                      } else if (errorMsg.contains(
+                                        'password',
+                                      )) {
+                                        setState(
+                                          () => error =
+                                              'Password terlalu pendek (min. 6 karakter)',
+                                        );
+                                      } else {
+                                        setState(
+                                          () => error =
+                                              'Register gagal, coba lagi',
+                                        );
+                                      }
+                                    } finally {
+                                      setState(() => isLoading = false);
+                                    }
+                                  },
                             child: isLoading
                                 ? const SizedBox(
                                     height: 20,
