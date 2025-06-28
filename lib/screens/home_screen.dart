@@ -414,201 +414,197 @@ Widget build(BuildContext context) {
                         ],
                       ),
                     )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: activities.length,
-                      itemBuilder: (context, index) {
-                        final activity = activities[index];
-                        final categoryColor = categoryColors[activity.category] ?? Colors.grey;
-                        final categoryIcon = categoryIcons[activity.category] ?? Icons.more_horiz;
+                  : RefreshIndicator(
+                      onRefresh: fetchActivities,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
+                        itemCount: activities.length,
+                        itemBuilder: (context, index) {
+                          final activity = activities[index];
+                          final categoryColor = categoryColors[activity.category] ?? Colors.grey;
+                          final categoryIcon = categoryIcons[activity.category] ?? Icons.more_horiz;
 
-                        // Tandai jika bukan hari ini
-                        final activityDate = DateTime.parse(activity.time);
-                        final isToday = activityDate.year == today.year &&
-                            activityDate.month == today.month &&
-                            activityDate.day == today.day;
+                          final today = DateTime.now();
+                          final activityDate = DateTime.parse(activity.time).toLocal();
+                          final isToday = activityDate.year == today.year &&
+                              activityDate.month == today.month &&
+                              activityDate.day == today.day;
 
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.all(16),
-                            leading: Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: categoryColor.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(
-                                categoryIcon,
-                                color: categoryColor,
-                                size: 24,
-                              ),
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                            title: Text(
-                              activity.title,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                                decoration: activity.done
-                                    ? TextDecoration.lineThrough
-                                    : TextDecoration.none,
-                                color: activity.done ? Colors.grey[500] : Colors.black87,
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(16),
+                              leading: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: categoryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Icon(
+                                  categoryIcon,
+                                  color: categoryColor,
+                                  size: 24,
+                                ),
                               ),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    Icon(Icons.access_time, size: 14, color: Colors.grey[600]),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      DateFormat('dd MMM, HH:mm').format(activityDate),
-                                      style: TextStyle(
-                                        color: Colors.grey[600],
-                                        fontSize: 13,
+                              title: Text(
+                                activity.title,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                  decoration: activity.done
+                                      ? TextDecoration.lineThrough
+                                      : TextDecoration.none,
+                                  color: activity.done ? Colors.grey[500] : Colors.black87,
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.access_time, size: 14, color: Colors.grey[600]),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        DateFormat('dd MMM, HH:mm').format(activityDate),
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 13,
+                                        ),
                                       ),
-                                    ),
-                                    if (!isToday)
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 8),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: Colors.red[100],
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          child: const Text(
-                                            'Not Today',
-                                            style: TextStyle(
-                                              color: Colors.red,
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
+                                      if (!isToday)
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 8),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: Colors.red[100],
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: const Text(
+                                              'Not Today',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                           ),
                                         ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: categoryColor.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      activity.category,
+                                      style: TextStyle(
+                                        color: categoryColor,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
                                       ),
-                                  ],
-                                ),
-                                const SizedBox(height: 2),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: categoryColor.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    activity.category,
-                                    style: TextStyle(
-                                      color: categoryColor,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Transform.scale(
-                                  scale: 1.2,
-                                  child: Checkbox(
-                                    value: activity.done,
-                                    activeColor: const Color(0xFF667eea),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    onChanged: (val) async {
-                                      try {
-                                        await SupabaseService.markDone(
-                                          activity.id,
-                                          val ?? false,
-                                        );
-                                        fetchActivities();
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              val! ? 'Task completed!' : 'Task marked as incomplete',
+                                ],
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Transform.scale(
+                                    scale: 1.2,
+                                    child: Checkbox(
+                                      value: activity.done,
+                                      activeColor: const Color(0xFF667eea),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      onChanged: (val) async {
+                                        try {
+                                          await SupabaseService.markDone(
+                                            activity.id,
+                                            val ?? false,
+                                          );
+                                          fetchActivities();
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                val! ? 'Task completed!' : 'Task marked as incomplete',
+                                              ),
+                                              duration: const Duration(seconds: 1),
                                             ),
-                                            duration: const Duration(seconds: 1),
+                                          );
+                                        } catch (e) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(content: Text('Failed to update task')),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                                    onPressed: () async {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(16),
                                           ),
-                                        );
-                                      } catch (e) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Failed to update task')),
-                                        );
-                                      }
+                                          title: const Text('Delete Activity'),
+                                          content: Text('Are you sure you want to delete "${activity.title}"?'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.pop(context),
+                                              child: const Text('Cancel'),
+                                            ),
+                                            ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.red,
+                                              ),
+                                              onPressed: () async {
+                                                try {
+                                                  await SupabaseService.deleteActivity(activity.id);
+                                                  Navigator.pop(context);
+                                                  fetchActivities();
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    const SnackBar(content: Text('Activity deleted')),
+                                                  );
+                                                } catch (e) {
+                                                  Navigator.pop(context);
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    const SnackBar(content: Text('Failed to delete activity')),
+                                                  );
+                                                }
+                                              },
+                                              child: const Text('Delete', style: TextStyle(color: Colors.white)),
+                                            ),
+                                          ],
+                                        ),
+                                      );
                                     },
                                   ),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete_outline, color: Colors.red),
-                                  onPressed: () async {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(16),
-                                        ),
-                                        title: const Text('Delete Activity'),
-                                        content: Text('Are you sure you want to delete "${activity.title}"?'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () => Navigator.pop(context),
-                                            child: const Text('Cancel'),
-                                          ),
-                                          ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.red,
-                                            ),
-                                            onPressed: () async {
-                                              try {
-                                                await SupabaseService.deleteActivity(activity.id);
-                                                Navigator.pop(context);
-                                                fetchActivities();
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  const SnackBar(content: Text('Activity deleted')),
-                                                );
-                                              } catch (e) {
-                                                Navigator.pop(context);
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  const SnackBar(content: Text('Failed to delete activity')),
-                                                );
-                                              }
-                                            },
-                                            child: const Text('Delete', style: TextStyle(color: Colors.white)),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
         ),
       ],
     ),
-    floatingActionButton: FloatingActionButton.extended(
+    floatingActionButton: FloatingActionButton(
       onPressed: showAddActivityDialog,
       backgroundColor: const Color(0xFF667eea),
-      icon: const Icon(Icons.add, color: Colors.white),
-      label: const Text(
-        'Add Activity',
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+      child: const Icon(Icons.add, color: Colors.white),
     ),
   );
 }
